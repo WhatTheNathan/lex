@@ -1,4 +1,5 @@
 #include <iostream>
+#include "lib/NFA.h"
 
 /*
  * 核心思想
@@ -9,6 +10,7 @@
  * 4.根据输入的字符序列分析词法
  */
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    std::string re = "(a*b)*(a|b)";
+    NFA nfa = NFA(re);
     return 0;
 }
