@@ -27,13 +27,15 @@ struct Triplet{
 class NFA {
 public:
     int headState;                 //开始状态
-    int tailSate;                  //结束状态
+    int tailState;                  //结束状态
     std::vector<Triplet> triplets; //三元组集合
     std::stack<char> stack;       //中缀转后缀所用栈
-    std::stack<NFA> subnfa_stack; // 子NFA的栈
     NFA(std::string re); //构造函数
     NFA(char letter);    //构造函数
-    static int stateCount = 0;    //总状态数全局变量
+
+    static int stateCount;    //总状态数全局变量
+
+    void printNFA(); // 陈述NFA基本信息，调试使用
 private:
     void adddot(std::string& re);  //对RE的连接加上.运算符
 
@@ -42,9 +44,9 @@ private:
     std::string infix2postfix(std::string re);
 
     void convert2nfa(std::string re);
-    NFA mutiplySubNFA(NFA nfa);   //
-    NFA orSubNFA(NFA leftNFA, NFA rightNFA);
-    NFA connectSubNFA(NFA leftNFA, NFA rightNFA);
+    void mutiply();   //
+    void orr(NFA rightNFA);
+    void connect(NFA nfa);
     // 栈内优先级
     int isp(char op);
     // 入栈优先级

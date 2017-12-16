@@ -8,15 +8,33 @@
 
 using namespace::std;
 
+int NFA::stateCount = 0;
+stack<NFA> subnfa_stack; // 子NFA的栈
+
 NFA::NFA(std::string re) {
     adddot(re);
     string postfixRE = infix2postfix(re);
+    convert2nfa(postfixRE);
+
+//    // a的nfa构造test
+//    NFA nfa = NFA('a');
+////    nfa.printNFA();
+//
+//    // b的nfa构造test
+//    NFA b_nfa= NFA('b');
+//
+//    // a*的nfa构造test
+//    nfa.mutiply();
+////    nfa.printNFA();
+//    nfa.orr(b_nfa);
+//    nfa.printNFA();
 }
 
 NFA::NFA(char letter) {
     headState = ++stateCount;
-    tailSate = ++stateCount;
-    Triplet triple = Triplet(headState,letter,tailSate);
+    tailState = ++stateCount;
+    Triplet triple = Triplet(headState,letter,tailState);
+    triplets.push_back(triple);
 }
 
 void NFA::adddot(std::string& re) {
@@ -79,34 +97,59 @@ void NFA::convert2nfa(std::string re) {
             subnfa_stack.push(subnfa);
         }
         else if(re[i] == '*'){
-            NFA subnfa = mutiplySubNFA(subnfa_stack.top());
-            subnfa_stack.pop();
-            subnfa_stack.push(subnfa);
+            subnfa_stack.top().mutiply();
         }
         else if(re[i] == '|'){
             NFA sub_right_nfa = subnfa_stack.top();
             subnfa_stack.pop();
-            NFA sub_left_nfa = subnfa_stack.top();
-            subnfa_stack.pop();
-            NFA subnfa = orSubNFA(sub_left_nfa,sub_right_nfa);
-            subnfa_stack.push(subnfa);
+            subnfa_stack.top().orr(sub_right_nfa);
         }
         else if(re[i] == '.'){
-
+            NFA sub_right_nfa = subnfa_stack.top();
+            subnfa_stack.pop();
+            subnfa_stack.top().connect(sub_right_nfa);
         }
     }
+    NFA finalNFA = subnfa_stack.top();
+    triplets = finalNFA.triplets;
+    headState = finalNFA.headState;
+    tailState = finalNFA.tailState;
+    subnfa_stack.pop();
+
+//    finalNFA.printNFA();
 }
 
-NFA NFA::mutiplySubNFA(NFA nfa) {
+void NFA::mutiply() {
+    triplets.push_back(Triplet(tailState,'e',headState));
+    int pre_headState = headState;
+    int pre_tailState = tailState;
 
+    headState = ++stateCount;
+    tailState = ++stateCount;
+    triplets.push_back(Triplet(headState,'e',pre_headState));
+    triplets.push_back(Triplet(headState,'e',tailState));
+    triplets.push_back(Triplet(pre_tailState,'e',tailState));
 }
 
-NFA NFA::orSubNFA(NFA leftNFA, NFA rightNFA) {
+void NFA::orr(NFA nfa) {
+    triplets.insert(triplets.end(),nfa.triplets.begin(),nfa.triplets.end());
+    int preself_headState = headState;
+    int preself_tailState = tailState;
 
+    headState = ++stateCount;
+    tailState = ++stateCount;
+
+    triplets.push_back(Triplet(headState,'e',preself_headState));
+    triplets.push_back(Triplet(headState,'e',nfa.headState));
+
+    triplets.push_back(Triplet(nfa.tailState,'e',tailState));
+    triplets.push_back(Triplet(preself_tailState,'e',tailState));
 }
 
-NFA NFA::connectSubNFA(NFA leftNFA, NFA rightNFA) {
-
+void NFA::connect(NFA nfa) {
+    triplets.insert(triplets.end(),nfa.triplets.begin(),nfa.triplets.end());
+    triplets.push_back(Triplet(tailState,'e',nfa.headState));
+    tailState = nfa.tailState;
 }
 
 int NFA::isp(char op) {
@@ -134,6 +177,14 @@ int NFA::icp(char op) {
             return 3;
         case '(':
             return 5;
+    }
+}
+
+void NFA::printNFA() {
+    cout<<"headState "<<headState<<endl;
+    cout<<"tailState "<<tailState<<endl;
+    for(auto triplet : triplets){
+        cout<<triplet.head<<"-"<<triplet.edge<<"-"<<triplet.tail<<endl;
     }
 }
 
