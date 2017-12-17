@@ -44,13 +44,11 @@ private:
     std::string infix2postfix(std::string re);
 
     void convert2nfa(std::string re);
-    void mutiply();   //
+    void mutiply();
     void orr(NFA rightNFA);
     void connect(NFA nfa);
-    // 栈内优先级
-    int isp(char op);
-    // 入栈优先级
-    int icp(char op);
+    int isp(char op); // 栈内优先级
+    int icp(char op); // 入栈优先级
 };
 
 #endif //N_LEXER_NFA_H

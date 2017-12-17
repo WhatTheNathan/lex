@@ -3,5 +3,5 @@ project(n_lexer)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp lib/NFA.cpp lib/NFA.h lib/Analyzer.cpp lib/Analyzer.h lib/Token.cpp)
+set(SOURCE_FILES main.cpp lib/NFA.cpp lib/NFA.h lib/Analyzer.cpp lib/Analyzer.h lib/Token.cpp lib/DFA.cpp lib/DFA.h)
 add_executable(n_lexer ${SOURCE_FILES})

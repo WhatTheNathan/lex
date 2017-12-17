@@ -3,7 +3,6 @@
 //
 
 #include "NFA.h"
-#include <stack>
 #include <iostream>
 
 using namespace::std;
