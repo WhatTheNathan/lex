@@ -1,6 +1,7 @@
 #include <iostream>
 #include "lib/NFA.h"
 #include "lib/DFA.h"
+#include "lib/ODFA.h"
 
 /*
  * 核心思想
@@ -14,5 +15,6 @@ int main() {
     std::string re = "(a*b)*(a|b)";
     NFA nfa = NFA(re);
     DFA dfa = DFA(nfa);
+    ODFA odfa = ODFA(dfa);
     return 0;
 }

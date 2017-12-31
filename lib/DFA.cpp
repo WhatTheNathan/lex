@@ -96,6 +96,15 @@ void DFA::judgeTerminal(std::set<int> _set) {
     }
 }
 
+bool DFA::isTerminal(std::set<int> _set) {
+    for(auto state: _set){
+        if(state == endState){
+            return true;
+        }
+    }
+    return false;
+}
+
 void DFA::printDFA() {
     for(auto set: sets){
         for(auto state: set){
