@@ -17,6 +17,7 @@ struct OSet{
         judgeCount = _judgeCount;
     }
 
+    // 用于判断DFA状态是否在该OSet中
     bool isInSet(std::set<int> _set){
         for(auto temp: set){
             if(_set == temp){
@@ -26,6 +27,7 @@ struct OSet{
         return false;
     }
 
+    // 将OSet作为map的key重载<运算符
     bool operator <(const OSet& _oset) const{
         if(set.size()<_oset.set.size()){
             return true;
@@ -49,20 +51,20 @@ struct OSetTriplet{
 
 class ODFA {
 public:
-    ODFA(DFA dfa);
-    std::vector<OSet> sets;
-    std::set<std::set<int>> headSet;
-    std::vector<OSet> terminalSets; //包含终态的集合
-    std::list<OSet> list;
+    ODFA(DFA dfa);                     // 构造函数
+    std::vector<OSet> sets;            // OSet的数组
+    std::set<std::set<int>> headSet;   // 初始OSet
+    std::vector<OSet> terminalSets;    // 包含终态的OSet
+    std::list<OSet> list;              // 划分时所用到的线性表
     std::vector<OSetTriplet> oSetTriplets; //ODFA的三元组数组，表示优化后的状态集合的三元组关系
 private:
     std::set<std::set<int>> emptySet;
-    void optimization(DFA dfa); // 优化DFA
+    void optimization(DFA dfa);           // 优化DFA
     void divideByTerminal(DFA dfa);
     void weakDivide(DFA dfa);
     void generateTriplet(DFA dfa);
 
-    void printODFA(); //调试使用
+    void printODFA();                   //调试使用
 };
 
 

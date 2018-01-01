@@ -2,6 +2,7 @@
 #include "lib/NFA.h"
 #include "lib/DFA.h"
 #include "lib/ODFA.h"
+#include "re/RE.h"
 
 /*
  * 核心思想
@@ -12,9 +13,13 @@
  * 4.根据输入的字符序列分析词法
  */
 int main() {
-    std::string re = "(a*b)*(a|b)";
-    NFA nfa = NFA(re);
-    DFA dfa = DFA(nfa);
-    ODFA odfa = ODFA(dfa);
+//    std::string re = "(a*b)*(a|b)";
+
+    addRE(digit);
+    std::string re = "[0-9]";
+
+//    NFA nfa = NFA(re);
+//    DFA dfa = DFA(nfa);
+//    ODFA odfa = ODFA(dfa);
     return 0;
 }

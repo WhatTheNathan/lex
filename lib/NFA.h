@@ -26,29 +26,33 @@ struct Triplet{
 
 class NFA {
 public:
-    int headState;                 //开始状态
-    int tailState;                  //结束状态
-    std::vector<Triplet> triplets; //三元组集合
-    std::stack<char> stack;       //中缀转后缀所用栈
     NFA(std::string re); //构造函数
     NFA(char letter);    //构造函数
 
     static int stateCount;    //总状态数全局变量
+    int headState;                 //开始状态
+    int tailState;                  //结束状态
+    std::vector<Triplet> triplets; //三元组集合
+    std::stack<char> stack;       //中缀转后缀所用栈
 
     void printNFA(); // 陈述NFA基本信息，调试使用
 private:
+    // 用于[]的预处理识别
+    char firstLetter;
+    char endLetter;
+    void preprocess(std::string& re); // 预处理，目前处理[]
     void adddot(std::string& re);  //对RE的连接加上.运算符
 
-    // 先规定只有*,|,(,),."这五种运算符，优先级高的数字高
+    // 先规定只有*,|,(,),.,+"运算符，优先级高的数字高
     // *的优先级大于| 大于.
     std::string infix2postfix(std::string re);
+    int isp(char op); // 栈内优先级
+    int icp(char op); // 入栈优先级
 
     void convert2nfa(std::string re);
     void mutiply();
     void orr(NFA rightNFA);
     void connect(NFA nfa);
-    int isp(char op); // 栈内优先级
-    int icp(char op); // 入栈优先级
 };
 
 #endif //N_LEXER_NFA_H

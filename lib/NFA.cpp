@@ -4,6 +4,7 @@
 
 #include "NFA.h"
 #include <iostream>
+#include "../re/RE.h"
 
 using namespace::std;
 
@@ -11,10 +12,12 @@ int NFA::stateCount = 0;
 stack<NFA> subnfa_stack; // 子NFA的栈
 
 NFA::NFA(std::string re) {
-    adddot(re);
-    string postfixRE = infix2postfix(re);
-    convert2nfa(postfixRE);
+    preprocess(re);
+//    adddot(re);
+//    string postfixRE = infix2postfix(re);
+//    convert2nfa(postfixRE);
 
+    cout<<re<<endl;
 //    // a的nfa构造test
 //    NFA nfa = NFA('a');
 ////    nfa.printNFA();
@@ -34,6 +37,36 @@ NFA::NFA(char letter) {
     tailState = ++stateCount;
     Triplet triple = Triplet(headState,letter,tailState);
     triplets.push_back(triple);
+}
+
+void NFA::preprocess(std::string &re) {
+    for(int i=0; i<re.size(); i++){
+        if(re[i] == '['){
+            int position = i;
+            if(isInDigitTable(re[i+1])){
+                firstLetter = re[++i];
+                i++;
+                endLetter = re[++i];
+                re.erase(re.begin()+position,re.begin()+position+5);
+                for(int i=0; i<digitTable.size(); i++){
+                    re.insert(position++,char2string(digitTable[i]));
+                    if(i != digitTable.size()-1) {
+                        re.insert(position++, "|");
+                    }
+                }
+            }else if(isInCapitalLetterTable(re[i+1])){
+                firstLetter = re[++i];
+                i++;
+                endLetter = re[++i];
+            }else if(isInLetterTable(re[i+1])){
+                firstLetter = re[++i];
+                i++;
+                endLetter = re[++i];
+            }else {
+                cout<<"error occur: invilid '['"<<endl;
+            }
+        }
+    }
 }
 
 void NFA::adddot(std::string& re) {
