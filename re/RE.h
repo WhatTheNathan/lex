@@ -2,19 +2,15 @@
 // Created by Nathan on 01/01/2018.
 //
 
-#ifndef N_LEXER_RE_H
-#define N_LEXER_RE_H
-
 #include "string"
 #include <vector>
 #include <algorithm>
 #include <map>
 #include <sstream>
 
-// 先构造一个函数将所有的表达式文法推断了
-// edge要换成string
-// 加入运算符+
 // 先把[0-9]+例子构造完
+// 重构ODFA，要对edge进行计数划分
+// 对已有ODFA，写Analyzer
 
 static std::vector<char> digitTable = {'0','1','2','3','4','5','6','7','8','9'};
 static std::vector<char> capitalLetterTable = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V',
@@ -59,7 +55,12 @@ static bool isInLetterTable(char letter){
     return false;
 }
 
+/// MARK -
+
+
 static std::map<std::string,std::string> map;
+//static std::map<std::string,std::string>::iterator it;
+
 static void addRE(std::string re){
     std::string tokenName = "";
     std::string expression = "";
@@ -78,11 +79,13 @@ static void addRE(std::string re){
     map[tokenName] = expression;
 }
 
+//static void preprocess(){
+////    for(it=map.begin(); it!=map.end(); it++)
+////    {
+////        map["digits"] =
+////    }
+//    map["digits"] = map["digit"] + map["digits"]
+//}
+
 static std::string digit = "digit->[0-9]";
-static std::string digits = "digits->digit+";
-
-
-
-
-
-#endif //N_LEXER_RE_H
+static std::string digits = "digits->[0-9]+";

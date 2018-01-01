@@ -38,10 +38,10 @@ struct OSet{
 
 struct OSetTriplet{
     std::set<std::set<int>> head;
-    char edge;
+    std::string edge;
     std::set<std::set<int>> tail;
 
-    OSetTriplet(std::set<std::set<int>> _headSet,char _edge,std::set<std::set<int>> _tailSet){
+    OSetTriplet(std::set<std::set<int>> _headSet,std::string _edge,std::set<std::set<int>> _tailSet){
         head = _headSet;
         edge = _edge;
         tail = _tailSet;

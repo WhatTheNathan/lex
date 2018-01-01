@@ -9,10 +9,10 @@
 
 struct SetTriplet{
     std::set<int> head;
-    char edge;
+    std::string edge;
     std::set<int> tail;
 
-    SetTriplet(std::set<int> _head,char _edge,std::set<int> _tail){
+    SetTriplet(std::set<int> _head,std::string _edge,std::set<int> _tail){
         head = _head;
         edge = _edge;
         tail = _tail;
@@ -31,7 +31,7 @@ public:
 
     int endState;                               // NFA的结束状态
 
-    std::set<int> move(std::set<int> states,char edge); // edge转换
+    std::set<int> move(std::set<int> states,std::string edge); // edge转换
     std::set<int> e_closure(std::set<int> states);      // e传递闭包
     bool isTerminal(std::set<int> _set);
 private:

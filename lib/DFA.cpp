@@ -24,27 +24,21 @@ void DFA::determined(NFA nfa) {
 
     for(int i=0; i<sets.size(); i++){
         set<int> current_set = sets[i];
-        // 这里最终应该是遍历所有边，求move
-//        for(int j=0;j<edges.size();j++)
-        set<int> a_set = move(current_set,'a');
-        a_set = e_closure(a_set);
-        if(!isSetExist(a_set)){
-            sets.push_back(a_set);
+        // 遍历所有边，求move
+        set<string>::iterator it;
+        for(it=nfa.edges.begin();it!=nfa.edges.end();it++){
+            set<int> moveSet = move(current_set,*it);
+            moveSet = e_closure(moveSet);
+            if(!isSetExist(moveSet)){
+                sets.push_back(moveSet);
+            }
+            judgeTerminal(moveSet);
+            setTriplets.push_back(SetTriplet(current_set,*it,moveSet));
         }
-        judgeTerminal(a_set);
-        setTriplets.push_back(SetTriplet(current_set,'a',a_set));
-
-        set<int> b_set = move(current_set,'b');
-        b_set = e_closure(b_set);
-        if(!isSetExist(b_set)){
-            sets.push_back(b_set);
-        }
-        judgeTerminal(b_set);
-        setTriplets.push_back(SetTriplet(current_set,'b',a_set));
     }
 }
 
-set<int> DFA::move(set<int> states, char edge) {
+set<int> DFA::move(set<int> states, string edge) {
     set<int> edge_states;
     for(auto state: states){
         for(auto triplet: triplets){
@@ -70,7 +64,7 @@ set<int> DFA::e_closure(set<int> states) {
 
         e_states.insert(state);
         for(auto triplet: triplets){
-            if((triplet.head == state) && (triplet.edge == 'e')){
+            if((triplet.head == state) && (triplet.edge == "e")){
                 state_stack.push(triplet.tail);
             }
         }

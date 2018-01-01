@@ -16,10 +16,11 @@ int main() {
 //    std::string re = "(a*b)*(a|b)";
 
     addRE(digit);
-    std::string re = "[0-9]";
+    addRE(digits);
+    std::string re = "[0-9]+";
 
-//    NFA nfa = NFA(re);
-//    DFA dfa = DFA(nfa);
+    NFA nfa = NFA(re,false);
+    DFA dfa = DFA(nfa);
 //    ODFA odfa = ODFA(dfa);
     return 0;
 }

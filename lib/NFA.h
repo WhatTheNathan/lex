@@ -8,16 +8,17 @@
 #include <vector>
 #include <string>
 #include <stack>
+#include <set>
 
 /**
  * @brief NFA的数据结构，以三元组表示图中的连接
  */
 struct Triplet{
     int head;
-    char edge;
+    std::string edge;
     int tail;
 
-    Triplet(int _head,int _edge,int _tail){
+    Triplet(int _head,std::string _edge,int _tail){
         head = _head;
         edge = _edge;
         tail = _tail;
@@ -26,14 +27,14 @@ struct Triplet{
 
 class NFA {
 public:
-    NFA(std::string re); //构造函数
-    NFA(char letter);    //构造函数
+    NFA(std::string re, bool isletter); //构造函数
 
-    static int stateCount;    //总状态数全局变量
-    int headState;                 //开始状态
+    static int stateCount;          //总状态数全局变量
+    int headState;                   //开始状态
     int tailState;                  //结束状态
-    std::vector<Triplet> triplets; //三元组集合
-    std::stack<char> stack;       //中缀转后缀所用栈
+    std::vector<Triplet> triplets;   //三元组集合
+    std::set<std::string> edges;
+    std::stack<char> stack;         //中缀转后缀所用栈
 
     void printNFA(); // 陈述NFA基本信息，调试使用
 private:
@@ -51,6 +52,7 @@ private:
 
     void convert2nfa(std::string re);
     void mutiply();
+    void add();
     void orr(NFA rightNFA);
     void connect(NFA nfa);
 };

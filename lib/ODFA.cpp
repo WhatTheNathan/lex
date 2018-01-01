@@ -22,10 +22,10 @@ void ODFA::optimization(DFA dfa) {
 void ODFA::generateTriplet(DFA dfa) {
     for(int i=0; i<sets.size(); i++){
         for(auto stateSet: sets[i].set){
-            set<int> aTailStateSet = dfa.e_closure(dfa.move(stateSet,'a'));;
+            set<int> aTailStateSet = dfa.e_closure(dfa.move(stateSet,"a"));;
             for(auto oSet: sets){
                 if(oSet.isInSet(aTailStateSet)){
-                    OSetTriplet triplet = OSetTriplet(sets[i].set,'a',oSet.set);
+                    OSetTriplet triplet = OSetTriplet(sets[i].set,"a",oSet.set);
                     oSetTriplets.push_back(triplet);
                     break;
                 }
@@ -33,10 +33,10 @@ void ODFA::generateTriplet(DFA dfa) {
         }
 
         for(auto stateSet: sets[i].set){
-            set<int> aTailStateSet = dfa.e_closure(dfa.move(stateSet,'b'));;
+            set<int> aTailStateSet = dfa.e_closure(dfa.move(stateSet,"b"));;
             for(auto oSet: sets){
                 if(oSet.isInSet(aTailStateSet)){
-                    OSetTriplet triplet = OSetTriplet(sets[i].set,'b',oSet.set);
+                    OSetTriplet triplet = OSetTriplet(sets[i].set,"b",oSet.set);
                     oSetTriplets.push_back(triplet);
                     break;
                 }
@@ -84,7 +84,7 @@ void ODFA::weakDivide(DFA dfa) {
         // 未用a,b划分过
         if(judgeSet.judgeCount == 0){
             for(auto stateSet: judgeSet.set){
-                set<int> tailStateSet = dfa.e_closure(dfa.move(stateSet,'a'));
+                set<int> tailStateSet = dfa.e_closure(dfa.move(stateSet,"a"));
                 for(auto oSet: list){
                     if(oSet.isInSet(tailStateSet)){
                         tempMap[oSet].set.insert(stateSet);
@@ -107,7 +107,7 @@ void ODFA::weakDivide(DFA dfa) {
         if(judgeSet.judgeCount == 1 || continueFlag == 1){
             continueFlag = 0;
             for(auto stateSet: judgeSet.set){
-                set<int> tailStateSet = dfa.e_closure(dfa.move(stateSet,'b'));
+                set<int> tailStateSet = dfa.e_closure(dfa.move(stateSet,"b"));
                 for(auto oSet: list){
                     if(oSet.isInSet(tailStateSet)){
                         tempMap[oSet].set.insert(stateSet);
