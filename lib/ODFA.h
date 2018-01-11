@@ -17,7 +17,7 @@ struct OSet{
         judgeCount = _judgeCount;
     }
 
-    // 用于判断DFA状态是否在该OSet中
+    // 用于判断状态集合是否在该OSet中
     bool isInSet(std::set<int> _set){
         for(auto temp: set){
             if(_set == temp){
@@ -55,6 +55,7 @@ public:
     std::vector<OSet> sets;            // OSet的数组
     std::set<std::set<int>> headSet;   // 初始OSet
     std::vector<OSet> terminalSets;    // 包含终态的OSet
+    std::vector<std::string> edges;     //边的集合
     std::list<OSet> list;              // 划分时所用到的线性表
     std::vector<OSetTriplet> oSetTriplets; //ODFA的三元组数组，表示优化后的状态集合的三元组关系
 private:
@@ -63,6 +64,7 @@ private:
     void divideByTerminal(DFA dfa);
     void weakDivide(DFA dfa);
     void generateTriplet(DFA dfa);
+    void convertEdges(std::set<std::string> edgeSet);
 
     void printODFA();                   //调试使用
 };

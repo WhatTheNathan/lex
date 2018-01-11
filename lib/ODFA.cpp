@@ -9,6 +9,7 @@
 using namespace::std;
 
 ODFA::ODFA(DFA dfa) {
+    convertEdges(dfa.edges);
     optimization(dfa);
 }
 
@@ -21,33 +22,30 @@ void ODFA::optimization(DFA dfa) {
 
 void ODFA::generateTriplet(DFA dfa) {
     for(int i=0; i<sets.size(); i++){
-        for(auto stateSet: sets[i].set){
-            set<int> aTailStateSet = dfa.e_closure(dfa.move(stateSet,"a"));;
-            for(auto oSet: sets){
-                if(oSet.isInSet(aTailStateSet)){
-                    OSetTriplet triplet = OSetTriplet(sets[i].set,"a",oSet.set);
-                    oSetTriplets.push_back(triplet);
-                    break;
-                }
-            }
-        }
-
-        for(auto stateSet: sets[i].set){
-            set<int> aTailStateSet = dfa.e_closure(dfa.move(stateSet,"b"));;
-            for(auto oSet: sets){
-                if(oSet.isInSet(aTailStateSet)){
-                    OSetTriplet triplet = OSetTriplet(sets[i].set,"b",oSet.set);
-                    oSetTriplets.push_back(triplet);
-                    break;
+        for(auto edge: edges){
+            for(auto stateSet: sets[i].set){
+                set<int> aTailStateSet = dfa.e_closure(dfa.move(stateSet,edge));;
+                for(auto oSet: sets){
+                    if(oSet.isInSet(aTailStateSet)){
+                        OSetTriplet triplet = OSetTriplet(sets[i].set,edge,oSet.set);
+                        oSetTriplets.push_back(triplet);
+                        break;
+                    }
                 }
             }
         }
     }
 }
 
+void ODFA::convertEdges(set<string> edgeSet) {
+    for(auto edge:edgeSet){
+        this->edges.push_back(edge);
+    }
+}
+
 void ODFA::weakDivide(DFA dfa) {
     while(!list.empty() ){
-        // 获取此时所有的叶节点状态集合
+        // 获取此时所有的叶节点OSet
         map<OSet,OSet> tempMap;
         map<OSet,OSet>::iterator it;
         for(auto oSet: list){
@@ -55,11 +53,10 @@ void ODFA::weakDivide(DFA dfa) {
             tempMap[oSet] = tempSet;
         }
 
-        int continueFlag = 0;
         OSet judgeSet = list.front();
-//        list.pop_front();
-        // 已经judge过a和b，则不能再分
-        if(judgeSet.judgeCount == 2 || judgeSet.set.size() == 1){
+
+        // 已经judge过所有边，或者状态集合数为1，则不能再划分
+        if(judgeSet.judgeCount == edges.size() || judgeSet.set.size() == 1){
             sets.push_back(judgeSet);
 
             for(auto state: judgeSet.set){
@@ -81,61 +78,52 @@ void ODFA::weakDivide(DFA dfa) {
             continue;
         }
 
-        // 未用a,b划分过
-        if(judgeSet.judgeCount == 0){
+        for(int i=judgeSet.judgeCount; i<edges.size(); i++){
+            // 进行划分
             for(auto stateSet: judgeSet.set){
-                set<int> tailStateSet = dfa.e_closure(dfa.move(stateSet,"a"));
+                set<int> tailStateSet = dfa.e_closure(dfa.move(stateSet,edges[i]));
+                // 属于当前树的叶节点，包括list中以及sets中
                 for(auto oSet: list){
                     if(oSet.isInSet(tailStateSet)){
                         tempMap[oSet].set.insert(stateSet);
                     }
                 }
-            }
-
-            // 如果用a划分划分不出来，则仍需要用b再次划分
-            for(it=tempMap.begin(); it!=tempMap.end(); it++)
-            {
-                if(it->second.set == judgeSet.set){
-                    continueFlag = 1;
-                    it->second.set = emptySet;
-                    break;
-                }
-            }
-        }
-
-        // 已经用a划分过
-        if(judgeSet.judgeCount == 1 || continueFlag == 1){
-            continueFlag = 0;
-            for(auto stateSet: judgeSet.set){
-                set<int> tailStateSet = dfa.e_closure(dfa.move(stateSet,"b"));
-                for(auto oSet: list){
+                for(auto oSet: sets){
                     if(oSet.isInSet(tailStateSet)){
                         tempMap[oSet].set.insert(stateSet);
                     }
                 }
             }
-            for(it=tempMap.begin(); it!=tempMap.end(); it++)
-            {
-                if(it->second.set == judgeSet.set){
-                    continueFlag = 1;
-                    it->second.set = emptySet;
-                    break;
-                }
-            }
-        }
-
-        if(continueFlag == 1) {
             judgeSet.judgeCount++;
-            list.push_back(judgeSet);
-        }else{
-            for(it=tempMap.begin(); it!=tempMap.end(); it++){
-                if(!it->second.set.empty()){
-                    it->second.judgeCount++;
-                    list.push_back(it->second);
+
+            // 判断是否继续划分
+            int continueFlag = 0;
+            for(it=tempMap.begin(); it!=tempMap.end(); it++)
+            {
+                if(it->second.set == judgeSet.set){
+                    continueFlag = 1;
+                    it->second.set = emptySet;
+                    break;
                 }
             }
+            // 不需要再划分
+            if(!continueFlag) {
+                list.pop_front();
+                // 则将划分出的OSet push到list中
+                for(it=tempMap.begin(); it!=tempMap.end(); it++){
+                    if(!it->second.set.empty()){
+                        it->second.judgeCount = judgeSet.judgeCount;
+                        list.push_front(it->second);
+                    }
+                }
+                break;
+            }
+            // 已经划分所有边，依然未能划分，则更新list中的judgeCount
+            if(judgeSet.judgeCount == edges.size()){
+                list.pop_front();
+                list.push_front(judgeSet);
+            }
         }
-        list.pop_front();
     }
 }
 
@@ -156,16 +144,17 @@ void ODFA::divideByTerminal(DFA dfa) {
 }
 
 void ODFA::printODFA() {
-    cout<<"===================="<<endl;
+    cout<<"=========headSet==========="<<endl;
     for(auto set: headSet){
         for(auto state: set){
             cout<<state<<",";
         }
         cout<<endl;
     }
-    cout<<"===================="<<endl;
+    cout<<"========headSet============"<<endl;
 
     for(auto triplet: oSetTriplets){
+        cout<<"************************************************************************************"<<endl;
         cout<<"head:"<<endl;
         cout<<"===================="<<endl;
         for(auto set: triplet.head){

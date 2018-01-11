@@ -33,7 +33,7 @@ public:
     int headState;                   //开始状态
     int tailState;                  //结束状态
     std::vector<Triplet> triplets;   //三元组集合
-    std::set<std::string> edges;
+    std::set<std::string> edges;     //边的集合
     std::stack<char> stack;         //中缀转后缀所用栈
 
     void printNFA(); // 陈述NFA基本信息，调试使用

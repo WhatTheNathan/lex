@@ -9,6 +9,7 @@ using namespace::std;
 
 DFA::DFA(NFA nfa) {
     triplets = nfa.triplets;
+    edges = nfa.edges;
     endState = nfa.tailState;
     determined(nfa);
     printDFA();
@@ -29,6 +30,9 @@ void DFA::determined(NFA nfa) {
         for(it=nfa.edges.begin();it!=nfa.edges.end();it++){
             set<int> moveSet = move(current_set,*it);
             moveSet = e_closure(moveSet);
+            if(moveSet.size() == 0){
+                continue;
+            }
             if(!isSetExist(moveSet)){
                 sets.push_back(moveSet);
             }

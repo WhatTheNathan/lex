@@ -21,21 +21,11 @@ NFA::NFA(std::string re, bool isLetter) {
         preprocess(re);
         adddot(re);
         string postfixRE = infix2postfix(re);
+        cout<<postfixRE<<endl;
         convert2nfa(postfixRE);
 
-        cout<<re<<endl;
-//    // a的nfa构造test
-//    NFA nfa = NFA('a');
-////    nfa.printNFA();
-//
-//    // b的nfa构造test
-//    NFA b_nfa= NFA('b');
-//
-//    // a*的nfa构造test
-//    nfa.mutiply();
-////    nfa.printNFA();
-//    nfa.orr(b_nfa);
-//    nfa.printNFA();
+//        cout<<re<<endl;
+//        printNFA();
     }
 }
 
@@ -48,12 +38,14 @@ void NFA::preprocess(std::string &re) {
                 i++;
                 endLetter = re[++i];
                 re.erase(re.begin()+position,re.begin()+position+5);
+                re.insert(position++, "(");
                 for(int i=0; i<digitTable.size(); i++){
                     re.insert(position++,char2string(digitTable[i]));
                     if(i != digitTable.size()-1) {
                         re.insert(position++, "|");
                     }
                 }
+                re.insert(position++, ")");
             }else if(isInCapitalLetterTable(re[i+1])){
                 firstLetter = re[++i];
                 i++;
@@ -124,7 +116,6 @@ string NFA::infix2postfix(string re) {
 // 遇到|运算符则对栈顶NFA构造新|型NFA
 void NFA::convert2nfa(std::string re) {
     for(int i=0; i<re.size(); i++){
-        // 先简陋地使用a或b，之后使用字母的集合
         if(isInDigitTable(re[i]) || isInCapitalLetterTable(re[i]) || isInLetterTable(re[i])){
             NFA subnfa = NFA(char2string(re[i]),true);
             subnfa_stack.push(subnfa);

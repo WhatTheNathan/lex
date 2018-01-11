@@ -28,6 +28,7 @@ public:
 
     std::vector<SetTriplet> setTriplets;        //DFA的三元组数组，表示合并后的状态集合的三元组关系
     std::vector<Triplet> triplets;              //NFA的三元组数组,具体的未合并的状态的三元组关系
+    std::set<std::string> edges;     //边的集合
 
     int endState;                               // NFA的结束状态
 
