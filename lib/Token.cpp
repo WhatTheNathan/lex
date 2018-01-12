@@ -3,3 +3,9 @@
 //
 
 #include "Token.h"
+#include "iostream"
+using namespace::std;
+
+void Token::printToken() {
+    cout<<"("<<lexme<<","<<tokenName<<","<<attrValue<<")"<<endl;
+}

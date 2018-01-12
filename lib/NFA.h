@@ -28,7 +28,7 @@ struct Triplet{
 class NFA {
 public:
     NFA(std::string re, bool isletter); //构造函数
-
+    std::string tokenName;
     static int stateCount;          //总状态数全局变量
     int headState;                   //开始状态
     int tailState;                  //结束状态
@@ -41,7 +41,8 @@ private:
     // 用于[]的预处理识别
     char firstLetter;
     char endLetter;
-    void preprocess(std::string& re); // 预处理，目前处理[]
+    std::string batchprocess(std::string re); // 分离/合并token
+    void preprocess(std::string& re); // 预处理，目前并处理[]
     void adddot(std::string& re);  //对RE的连接加上.运算符
 
     // 先规定只有*,|,(,),.,+"运算符，优先级高的数字高

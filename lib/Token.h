@@ -12,13 +12,15 @@ class Token {
 public:
     std::string lexme;
     std::string tokenName;
-    std::string attrValue;
+    int attrValue;
 
-    Token(std::string _lexme , std::string _tokenName, std::string _attrValue){
+    Token(std::string _lexme , std::string _tokenName, int _attrValue){
         lexme = _lexme;
         tokenName = _tokenName;
         attrValue = _attrValue;
     }
+
+    void printToken();
 };
 
 

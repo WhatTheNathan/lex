@@ -9,7 +9,6 @@
 #include <sstream>
 
 // 先把[0-9]+例子构造完
-// 重构ODFA，要对edge进行计数划分
 // 对已有ODFA，写Analyzer
 
 static std::vector<char> digitTable = {'0','1','2','3','4','5','6','7','8','9'};
@@ -56,36 +55,7 @@ static bool isInLetterTable(char letter){
 }
 
 /// MARK -
-
-
-static std::map<std::string,std::string> map;
-//static std::map<std::string,std::string>::iterator it;
-
-static void addRE(std::string re){
-    std::string tokenName = "";
-    std::string expression = "";
-    int count = 0;
-    while(re[count] != '-'){
-        tokenName.insert(count,char2string(re[count]));
-        count++;
-    }
-    count += 2;
-    int index = 0;
-    while(count < re.length()){
-        expression.insert(index,char2string(re[count]));
-        index++;
-        count++;
-    }
-    map[tokenName] = expression;
-}
-
-//static void preprocess(){
-////    for(it=map.begin(); it!=map.end(); it++)
-////    {
-////        map["digits"] =
-////    }
-//    map["digits"] = map["digit"] + map["digits"]
-//}
+static std::map<std::string,int> tokenMap;
 
 static std::string digit = "digit->[0-9]";
 static std::string digits = "digits->[0-9]+";

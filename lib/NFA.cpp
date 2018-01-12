@@ -18,6 +18,7 @@ NFA::NFA(std::string re, bool isLetter) {
         Triplet triple = Triplet(headState,re,tailState);
         triplets.push_back(triple);
     }else {
+        re = batchprocess(re);
         preprocess(re);
         adddot(re);
         string postfixRE = infix2postfix(re);
@@ -27,6 +28,24 @@ NFA::NFA(std::string re, bool isLetter) {
 //        cout<<re<<endl;
 //        printNFA();
     }
+}
+
+string NFA::batchprocess(string re) {
+    std::string expression = "";
+    int count = 0;
+    while(re[count] != '-'){
+        this->tokenName.insert(count,char2string(re[count]));
+        count++;
+    }
+    count += 2;
+    int index = 0;
+    while(count < re.length()){
+        expression.insert(index,char2string(re[count]));
+        index++;
+        count++;
+    }
+    tokenMap[tokenName] = 0;
+    return expression;
 }
 
 void NFA::preprocess(std::string &re) {

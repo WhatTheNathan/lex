@@ -22,16 +22,14 @@ struct SetTriplet{
 class DFA {
 public:
     DFA(NFA nfa);
+    std::string tokenName;
     std::vector<std::set<int>> sets;
     std::set<int> headSet;
     std::vector<std::set<int>> terminalSets;        //包含终态的集合
-
     std::vector<SetTriplet> setTriplets;        //DFA的三元组数组，表示合并后的状态集合的三元组关系
     std::vector<Triplet> triplets;              //NFA的三元组数组,具体的未合并的状态的三元组关系
     std::set<std::string> edges;     //边的集合
-
     int endState;                               // NFA的结束状态
-
     std::set<int> move(std::set<int> states,std::string edge); // edge转换
     std::set<int> e_closure(std::set<int> states);      // e传递闭包
     bool isTerminal(std::set<int> _set);

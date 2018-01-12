@@ -11,8 +11,9 @@ DFA::DFA(NFA nfa) {
     triplets = nfa.triplets;
     edges = nfa.edges;
     endState = nfa.tailState;
+    tokenName = nfa.tokenName;
     determined(nfa);
-    printDFA();
+//    printDFA();
 }
 
 void DFA::determined(NFA nfa) {

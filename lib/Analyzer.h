@@ -6,8 +6,17 @@
 #define N_LEXER_ANALYZER_H
 
 
-class Analyzer {
+#include "ODFA.h"
+#include "Token.h"
 
+class Analyzer {
+public:
+    Analyzer(ODFA &odfa,std::string code);
+    void run();
+private:
+    std::vector<Token> tokens;
+    ODFA odfa;
+    std::string code;
 };
 
 

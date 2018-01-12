@@ -10,6 +10,7 @@
 struct OSet{
     std::set<std::set<int>> set;
     int judgeCount = 0;
+    std::string tokenName = "";
 
     OSet(){}
     OSet(std::set<std::set<int>> _set, int _judgeCount){
@@ -37,11 +38,11 @@ struct OSet{
 };
 
 struct OSetTriplet{
-    std::set<std::set<int>> head;
+    OSet head;
     std::string edge;
-    std::set<std::set<int>> tail;
+    OSet tail;
 
-    OSetTriplet(std::set<std::set<int>> _headSet,std::string _edge,std::set<std::set<int>> _tailSet){
+    OSetTriplet(OSet _headSet,std::string _edge,OSet _tailSet){
         head = _headSet;
         edge = _edge;
         tail = _tailSet;
@@ -51,13 +52,15 @@ struct OSetTriplet{
 
 class ODFA {
 public:
-    ODFA(DFA dfa);                     // 构造函数
+    ODFA();
+    ODFA(DFA dfa);
     std::vector<OSet> sets;            // OSet的数组
-    std::set<std::set<int>> headSet;   // 初始OSet
+    OSet headSet;   // 初始OSet
     std::vector<OSet> terminalSets;    // 包含终态的OSet
     std::vector<std::string> edges;     //边的集合
     std::list<OSet> list;              // 划分时所用到的线性表
     std::vector<OSetTriplet> oSetTriplets; //ODFA的三元组数组，表示优化后的状态集合的三元组关系
+    void printODFA();                   //调试使用
 private:
     std::set<std::set<int>> emptySet;
     void optimization(DFA dfa);           // 优化DFA
@@ -65,8 +68,6 @@ private:
     void weakDivide(DFA dfa);
     void generateTriplet(DFA dfa);
     void convertEdges(std::set<std::string> edgeSet);
-
-    void printODFA();                   //调试使用
 };
 
 

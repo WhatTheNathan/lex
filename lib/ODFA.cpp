@@ -8,6 +8,7 @@
 
 using namespace::std;
 
+ODFA::ODFA() {}
 ODFA::ODFA(DFA dfa) {
     convertEdges(dfa.edges);
     optimization(dfa);
@@ -17,8 +18,9 @@ void ODFA::optimization(DFA dfa) {
     divideByTerminal(dfa);
     weakDivide(dfa);
     generateTriplet(dfa);
-    printODFA();
+//    printODFA();
 }
+
 
 void ODFA::generateTriplet(DFA dfa) {
     for(int i=0; i<sets.size(); i++){
@@ -27,11 +29,12 @@ void ODFA::generateTriplet(DFA dfa) {
                 set<int> aTailStateSet = dfa.e_closure(dfa.move(stateSet,edge));;
                 for(auto oSet: sets){
                     if(oSet.isInSet(aTailStateSet)){
-                        OSetTriplet triplet = OSetTriplet(sets[i].set,edge,oSet.set);
+                        OSetTriplet triplet = OSetTriplet(sets[i],edge,oSet);
                         oSetTriplets.push_back(triplet);
                         break;
                     }
                 }
+                break;
             }
         }
     }
@@ -43,6 +46,7 @@ void ODFA::convertEdges(set<string> edgeSet) {
     }
 }
 
+// 未写lookback
 void ODFA::weakDivide(DFA dfa) {
     while(!list.empty() ){
         // 获取此时所有的叶节点OSet
@@ -57,12 +61,10 @@ void ODFA::weakDivide(DFA dfa) {
 
         // 已经judge过所有边，或者状态集合数为1，则不能再划分
         if(judgeSet.judgeCount == edges.size() || judgeSet.set.size() == 1){
-            sets.push_back(judgeSet);
-
             for(auto state: judgeSet.set){
                 // 寻找headSet
                 if(state == dfa.headSet){
-                    this->headSet = judgeSet.set;
+                    this->headSet = judgeSet;
                     break;
                 }
             }
@@ -71,9 +73,11 @@ void ODFA::weakDivide(DFA dfa) {
                 vector<set<int>>::iterator ifind = find(dfa.terminalSets.begin(), dfa.terminalSets.end(), state);
                 if(ifind != dfa.terminalSets.end())
                 {
+                    judgeSet.tokenName = dfa.tokenName;
                     this->terminalSets.push_back(judgeSet);
                 }
             }
+            sets.push_back(judgeSet);
             list.pop_front();
             continue;
         }
@@ -145,8 +149,8 @@ void ODFA::divideByTerminal(DFA dfa) {
 
 void ODFA::printODFA() {
     cout<<"=========headSet==========="<<endl;
-    for(auto set: headSet){
-        for(auto state: set){
+    for(auto stateSet: headSet.set){
+        for(auto state: stateSet){
             cout<<state<<",";
         }
         cout<<endl;
@@ -157,7 +161,7 @@ void ODFA::printODFA() {
         cout<<"************************************************************************************"<<endl;
         cout<<"head:"<<endl;
         cout<<"===================="<<endl;
-        for(auto set: triplet.head){
+        for(auto set: triplet.head.set){
             for(auto state: set){
                 cout<<state<<",";
             }
@@ -170,7 +174,7 @@ void ODFA::printODFA() {
 
         cout<<"tail:"<<endl;
         cout<<"===================="<<endl;
-        for(auto set: triplet.tail){
+        for(auto set: triplet.tail.set){
             for(auto state: set){
                 cout<<state<<",";
             }
