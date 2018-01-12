@@ -14,14 +14,18 @@
  * 4.根据输入的字符序列分析词法
  */
 int main() {
-//    std::string re = "test->(a*b)*(a|b)";
-    std::string re = "digits->[0-9]+";
+    NFA digits_nfa = NFA(digits,false);
+    NFA test_nfa = NFA(re, false);
 
-    NFA nfa = NFA(re,false);
-    DFA dfa = DFA(nfa);
+    std::vector<NFA> nfas;
+    nfas.push_back(test_nfa);
+    digits_nfa.merge(nfas);
+    digits_nfa.printNFA();
+
+    DFA dfa = DFA(digits_nfa);
     ODFA odfa = ODFA(dfa);
 
-    std::string code = "321";
+    std::string code = "21312";
     Analyzer analyzer = Analyzer(odfa,code);
     analyzer.run();
 

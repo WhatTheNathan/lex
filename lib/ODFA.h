@@ -55,8 +55,9 @@ public:
     ODFA();
     ODFA(DFA dfa);
     std::vector<OSet> sets;            // OSet的数组
-    OSet headSet;   // 初始OSet
+    OSet headSet;                       // 初始OSet
     std::vector<OSet> terminalSets;    // 包含终态的OSet
+    std::map<int,OSet> orderTeminalMap;
     std::vector<std::string> edges;     //边的集合
     std::list<OSet> list;              // 划分时所用到的线性表
     std::vector<OSetTriplet> oSetTriplets; //ODFA的三元组数组，表示优化后的状态集合的三元组关系

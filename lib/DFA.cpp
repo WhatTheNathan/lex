@@ -8,12 +8,14 @@
 using namespace::std;
 
 DFA::DFA(NFA nfa) {
+    terminalVec = nfa.terminalVec;
+    terminalMap = nfa.terminalMap;
     triplets = nfa.triplets;
     edges = nfa.edges;
     endState = nfa.tailState;
-    tokenName = nfa.tokenName;
+
     determined(nfa);
-//    printDFA();
+    printDFA();
 }
 
 void DFA::determined(NFA nfa) {
@@ -30,10 +32,10 @@ void DFA::determined(NFA nfa) {
         set<string>::iterator it;
         for(it=nfa.edges.begin();it!=nfa.edges.end();it++){
             set<int> moveSet = move(current_set,*it);
-            moveSet = e_closure(moveSet);
             if(moveSet.size() == 0){
                 continue;
             }
+            moveSet = e_closure(moveSet);
             if(!isSetExist(moveSet)){
                 sets.push_back(moveSet);
             }
@@ -88,20 +90,24 @@ bool DFA::isSetExist(std::set<int> _set) {
 
 void DFA::judgeTerminal(std::set<int> _set) {
     for(auto state: _set){
-        if(state == endState){
-            terminalSets.push_back(_set);
-            break;
+        for(auto endState: terminalVec){
+            if(state == endState){
+                setTerminal_TokenMap[_set] = terminalMap[endState];
+                break;
+            }
         }
     }
 }
 
-bool DFA::isTerminal(std::set<int> _set) {
+int DFA::setOrder(std::set<int> _set) {
     for(auto state: _set){
-        if(state == endState){
-            return true;
+        for(int i=0; i<terminalVec.size(); i++){
+            if(state == terminalVec[i]){
+                return i+1;
+            }
         }
     }
-    return false;
+    return 0;
 }
 
 void DFA::printDFA() {

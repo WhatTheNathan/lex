@@ -18,7 +18,7 @@ void ODFA::optimization(DFA dfa) {
     divideByTerminal(dfa);
     weakDivide(dfa);
     generateTriplet(dfa);
-//    printODFA();
+    printODFA();
 }
 
 
@@ -48,33 +48,41 @@ void ODFA::convertEdges(set<string> edgeSet) {
 
 // 未写lookback
 void ODFA::weakDivide(DFA dfa) {
+    OSet emptyOSet(emptySet,0);
+    list.push_back(emptyOSet);
     while(!list.empty() ){
         // 获取此时所有的叶节点OSet
         map<OSet,OSet> tempMap;
         map<OSet,OSet>::iterator it;
+
         for(auto oSet: list){
-            OSet tempSet = OSet(emptySet,0);
+            OSet tempSet = emptyOSet;
             tempMap[oSet] = tempSet;
         }
 
+//        cout<<"list大小 "<<list.size()<<endl;
         OSet judgeSet = list.front();
+//        cout<<"judgeSet的set大小 "<<judgeSet.set.size()<<endl;
 
         // 已经judge过所有边，或者状态集合数为1，则不能再划分
         if(judgeSet.judgeCount == edges.size() || judgeSet.set.size() == 1){
-            for(auto state: judgeSet.set){
+            for(auto stateSet: judgeSet.set){
                 // 寻找headSet
-                if(state == dfa.headSet){
+                if(stateSet == dfa.headSet){
                     this->headSet = judgeSet;
                     break;
                 }
             }
-            for(auto state: judgeSet.set){
+            for(auto stateSet: judgeSet.set){
                 // 寻找terminalSet
-                vector<set<int>>::iterator ifind = find(dfa.terminalSets.begin(), dfa.terminalSets.end(), state);
-                if(ifind != dfa.terminalSets.end())
+                map<std::set<int>,std::string>::iterator it;
+                for( it=dfa.setTerminal_TokenMap.begin(); it!=dfa.setTerminal_TokenMap.end(); it++)
                 {
-                    judgeSet.tokenName = dfa.tokenName;
-                    this->terminalSets.push_back(judgeSet);
+                    if(stateSet == it->first){
+                        judgeSet.tokenName = dfa.setTerminal_TokenMap[stateSet];
+                        this->terminalSets.push_back(judgeSet);
+                        break;
+                    }
                 }
             }
             sets.push_back(judgeSet);
@@ -84,8 +92,14 @@ void ODFA::weakDivide(DFA dfa) {
 
         for(int i=judgeSet.judgeCount; i<edges.size(); i++){
             // 进行划分
+//            cout<<"通过"<<edges[i]<<"划分"<<endl;
             for(auto stateSet: judgeSet.set){
-                set<int> tailStateSet = dfa.e_closure(dfa.move(stateSet,edges[i]));
+                set<int> moveSet = dfa.move(stateSet,edges[i]);
+                if(moveSet.size() == 0){
+                    tempMap[emptyOSet].set.insert(stateSet);
+                    continue;
+                }
+                set<int> tailStateSet = dfa.e_closure(moveSet);
                 // 属于当前树的叶节点，包括list中以及sets中
                 for(auto oSet: list){
                     if(oSet.isInSet(tailStateSet)){
@@ -134,17 +148,22 @@ void ODFA::weakDivide(DFA dfa) {
 void ODFA::divideByTerminal(DFA dfa) {
     OSet positiveSet(emptySet,0);
     OSet terminalSet(emptySet,0);
-
-    for(auto set: dfa.sets){
-        if(dfa.isTerminal(set)){
-            terminalSet.set.insert(set);
-        }else {
-            positiveSet.set.insert(set);
-        }
+    orderTeminalMap[0] = positiveSet;
+    int count = 1;
+    for(auto set: dfa.terminalVec){
+        orderTeminalMap[count] = terminalSet;
+        count++;;
     }
 
-    list.push_back(positiveSet);
-    list.push_back(terminalSet);
+    for(auto _set: dfa.sets){
+        orderTeminalMap[dfa.setOrder(_set)].set.insert(_set);
+    }
+    map<int,OSet>::iterator it;
+    for( it=this->orderTeminalMap.begin(); it!=this->orderTeminalMap.end(); it++)
+    {
+//        cout<<"第一次划分所放入的该OSet的size: "<<it->second.set.size()<<endl;
+        list.push_back(it->second);
+    }
 }
 
 void ODFA::printODFA() {

@@ -18,10 +18,16 @@ void Analyzer::run() {
 //    cout<<code<<endl;
     OSet currentOSet = odfa.headSet;
     for(auto edge: code){
+        int findFlag = 0;
         for(auto triplet: odfa.oSetTriplets){
             if(triplet.head.set == currentOSet.set && triplet.edge == char2string(edge)){
                 currentOSet = triplet.tail;
+                findFlag = 1;
+                continue;
             }
+        }
+        if(!findFlag){
+            cout<<"error occur: 找不到边"<<endl;
         }
     }
     Token token = Token(code,currentOSet.tokenName,++tokenMap[currentOSet.tokenName]);

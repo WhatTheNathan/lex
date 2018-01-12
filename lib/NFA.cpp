@@ -22,10 +22,10 @@ NFA::NFA(std::string re, bool isLetter) {
         preprocess(re);
         adddot(re);
         string postfixRE = infix2postfix(re);
-        cout<<postfixRE<<endl;
         convert2nfa(postfixRE);
 
-//        cout<<re<<endl;
+//        cout<<"re: "<<re<<endl;
+//        cout<<"postfixRE: "<<postfixRE<<endl;
 //        printNFA();
     }
 }
@@ -160,6 +160,9 @@ void NFA::convert2nfa(std::string re) {
     triplets = finalNFA.triplets;
     headState = finalNFA.headState;
     tailState = finalNFA.tailState;
+    // 加入terminal-token表中
+    terminalVec.push_back(tailState);
+    terminalMap[tailState] = tokenName;
     subnfa_stack.pop();
 
 //    finalNFA.printNFA();
@@ -241,11 +244,40 @@ int NFA::icp(char op) {
     }
 }
 
+void NFA::merge(vector<NFA> nfas) {
+    int leftHeadState = headState;
+    headState = ++stateCount;
+    triplets.push_back(Triplet(headState,"e",leftHeadState));
+
+    for(auto nfa: nfas){
+        // 合并edges
+        for(auto edge: nfa.edges){
+            edges.insert(edge);
+        }
+        triplets.insert(triplets.end(),nfa.triplets.begin(),nfa.triplets.end());
+        int rightHeadState = nfa.headState;
+        triplets.push_back(Triplet(headState,"e",rightHeadState));
+
+        map<int,std::string>::iterator iter;
+        for( iter=nfa.terminalMap.begin(); iter!=nfa.terminalMap.end(); iter++)
+        {
+            this->terminalMap[iter->first] = iter->second;
+            this->terminalVec.push_back(iter->first);
+        }
+    }
+}
+
 void NFA::printNFA() {
     cout<<"headState "<<headState<<endl;
     cout<<"tailState "<<tailState<<endl;
     for(auto triplet : triplets){
         cout<<triplet.head<<"-"<<triplet.edge<<"-"<<triplet.tail<<endl;
+    }
+    cout<<"terminal-token table"<<endl;
+    map<int,std::string>::iterator it;
+    for( it=this->terminalMap.begin(); it!=this->terminalMap.end(); it++)
+    {
+        cout<<"("<<it->first<<","<<it->second<<")"<<endl;
     }
 }
 
