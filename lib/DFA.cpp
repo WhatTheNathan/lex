@@ -15,7 +15,7 @@ DFA::DFA(NFA nfa) {
     endState = nfa.tailState;
 
     determined(nfa);
-    printDFA();
+//    printDFA();
 }
 
 void DFA::determined(NFA nfa) {
@@ -71,7 +71,7 @@ set<int> DFA::e_closure(set<int> states) {
 
         e_states.insert(state);
         for(auto triplet: triplets){
-            if((triplet.head == state) && (triplet.edge == "e")){
+            if((triplet.head == state) && (triplet.edge == "ε")){
                 state_stack.push(triplet.tail);
             }
         }

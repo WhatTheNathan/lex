@@ -15,8 +15,16 @@ public:
     void run();
 private:
     std::vector<Token> tokens;
+    std::vector<char> word;
     ODFA odfa;
     std::string code;
+
+    bool isReserved(OSet oSet);      //识别是否为保留字
+    std::string pop_word();          //弹出word
+
+    OSetTriplet banTriplet;                 //ban掉保留字的path
+    bool isReserve;
+    std::string reserveTokenName;
 };
 
 

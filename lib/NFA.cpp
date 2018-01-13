@@ -19,14 +19,13 @@ NFA::NFA(std::string re, bool isLetter) {
         triplets.push_back(triple);
     }else {
         re = batchprocess(re);
-        preprocess(re);
+        re = preprocess(re);
         adddot(re);
         string postfixRE = infix2postfix(re);
         convert2nfa(postfixRE);
 
 //        cout<<"re: "<<re<<endl;
 //        cout<<"postfixRE: "<<postfixRE<<endl;
-//        printNFA();
     }
 }
 
@@ -48,7 +47,8 @@ string NFA::batchprocess(string re) {
     return expression;
 }
 
-void NFA::preprocess(std::string &re) {
+string NFA::preprocess(std::string re) {
+    string returnRE;
     for(int i=0; i<re.size(); i++){
         if(re[i] == '['){
             int position = i;
@@ -56,34 +56,64 @@ void NFA::preprocess(std::string &re) {
                 firstLetter = re[++i];
                 i++;
                 endLetter = re[++i];
-                re.erase(re.begin()+position,re.begin()+position+5);
-                re.insert(position++, "(");
-                for(int i=0; i<digitTable.size(); i++){
-                    re.insert(position++,char2string(digitTable[i]));
-                    if(i != digitTable.size()-1) {
-                        re.insert(position++, "|");
+//                re.erase(re.begin()+position,re.begin()+position+5);
+                returnRE.insert(returnRE.size(), "(");
+                for(int j=0; j<digitTable.size(); j++){
+                    returnRE.insert(returnRE.size(),char2string(digitTable[j]));
+                    if(j != digitTable.size()-1) {
+                        returnRE.insert(returnRE.size(), "|");
                     }
                 }
-                re.insert(position++, ")");
+                returnRE.insert(returnRE.size(), ")");
+                i++;
             }else if(isInCapitalLetterTable(re[i+1])){
                 firstLetter = re[++i];
                 i++;
                 endLetter = re[++i];
+                returnRE.insert(returnRE.size(), "(");
+                for(int j=0; j<capitalLetterTable.size(); j++){
+                    returnRE.insert(returnRE.size(),char2string(capitalLetterTable[j]));
+                    if(j != capitalLetterTable.size()-1) {
+                        returnRE.insert(returnRE.size(), "|");
+                    }
+                }
+                returnRE.insert(returnRE.size(), ")");
+                i++;
             }else if(isInLetterTable(re[i+1])){
                 firstLetter = re[++i];
                 i++;
                 endLetter = re[++i];
+                returnRE.insert(returnRE.size(), "(");
+                for(int j=0; j<letterTable.size(); j++){
+                    returnRE.insert(returnRE.size(),char2string(letterTable[j]));
+                    if(j != letterTable.size()-1) {
+                        returnRE.insert(returnRE.size(), "|");
+                    }
+                }
+                returnRE.insert(returnRE.size(), ")");
+                i++;
             }else {
                 cout<<"error occur: invilid '['"<<endl;
             }
+        }else{
+            returnRE.insert(returnRE.size(), char2string(re[i]));
         }
     }
+    return returnRE;
 }
 
 void NFA::adddot(std::string& re) {
     for(int i=0; i<re.size(); i++){
-        if( ( (re[i] == ')') || (re[i] == '*') || (re[i] == '+')) && ((i+1) != re.size() && re[i+1] != '*' && re[i+1] != '+')) {
+        if( ((re[i] == '*') || (re[i] == '+')) && ((i+1) != re.size() && re[i+1] != '*' && re[i+1] != '+' && re[i+1] != ')')) {
             re.insert(i+1,".");
+        }
+        if( (re[i] == ')') && ((i+1) != re.size() && re[i+1] != '*' && re[i+1] != '+' && re[i+1] != '|' && re[i+1] != ')')){
+            re.insert(i+1,".");
+        }
+        if(isInDigitTable(re[i]) || isInCapitalLetterTable(re[i]) || isInLetterTable(re[i])){
+            if(isInDigitTable(re[i+1]) || isInCapitalLetterTable(re[i+1]) || isInLetterTable(re[i+1]) || isInNonTable(re[i+1])){
+                re.insert(i+1,".");
+            }
         }
     }
 }
@@ -127,15 +157,17 @@ string NFA::infix2postfix(string re) {
     }
     return postfixRE;
 }
-
-// 需要一个构造*运算符的子函数和一个构造|运算符的子函数
-// 操作数可以构造一个子NFA，然后入栈
-// 遇到*运算符则对栈顶NFA构造新*型NFA
-// 遇到.运算符则对栈顶NFA构造新.型NFA
-// 遇到|运算符则对栈顶NFA构造新|型NFA
+/**
+/ 需要一个构造*运算符的子函数和一个构造|运算符的子函数
+/ 操作数可以构造一个子NFA，然后入栈
+/ 遇到*运算符则对栈顶NFA构造新*型NFA
+/ 遇到.运算符则对栈顶NFA构造新.型NFA
+/ 遇到|运算符则对栈顶NFA构造新|型NFA
+/ ...
+**/
 void NFA::convert2nfa(std::string re) {
     for(int i=0; i<re.size(); i++){
-        if(isInDigitTable(re[i]) || isInCapitalLetterTable(re[i]) || isInLetterTable(re[i])){
+        if(isInDigitTable(re[i]) || isInCapitalLetterTable(re[i]) || isInLetterTable(re[i]) ||isInOperatorTable(re[i]) || isInEmptyTable(re[i]) || isInNonTable(re[i]) ){
             NFA subnfa = NFA(char2string(re[i]),true);
             subnfa_stack.push(subnfa);
         }
@@ -164,31 +196,29 @@ void NFA::convert2nfa(std::string re) {
     terminalVec.push_back(tailState);
     terminalMap[tailState] = tokenName;
     subnfa_stack.pop();
-
-//    finalNFA.printNFA();
 }
 
 void NFA::mutiply() {
-    triplets.push_back(Triplet(tailState,"e",headState));
+    triplets.push_back(Triplet(tailState,"ε",headState));
     int pre_headState = headState;
     int pre_tailState = tailState;
 
     headState = ++stateCount;
     tailState = ++stateCount;
-    triplets.push_back(Triplet(headState,"e",pre_headState));
-    triplets.push_back(Triplet(headState,"e",tailState));
-    triplets.push_back(Triplet(pre_tailState,"e",tailState));
+    triplets.push_back(Triplet(headState,"ε",pre_headState));
+    triplets.push_back(Triplet(headState,"ε",tailState));
+    triplets.push_back(Triplet(pre_tailState,"ε",tailState));
 }
 
 void NFA::add() {
-    triplets.push_back(Triplet(tailState,"e",headState));
+    triplets.push_back(Triplet(tailState,"ε",headState));
     int pre_headState = headState;
     int pre_tailState = tailState;
 
     headState = ++stateCount;
     tailState = ++stateCount;
-    triplets.push_back(Triplet(headState,"e",pre_headState));
-    triplets.push_back(Triplet(pre_tailState,"e",tailState));
+    triplets.push_back(Triplet(headState,"ε",pre_headState));
+    triplets.push_back(Triplet(pre_tailState,"ε",tailState));
 }
 
 void NFA::orr(NFA nfa) {
@@ -199,16 +229,16 @@ void NFA::orr(NFA nfa) {
     headState = ++stateCount;
     tailState = ++stateCount;
 
-    triplets.push_back(Triplet(headState,"e",preself_headState));
-    triplets.push_back(Triplet(headState,"e",nfa.headState));
+    triplets.push_back(Triplet(headState,"ε",preself_headState));
+    triplets.push_back(Triplet(headState,"ε",nfa.headState));
 
-    triplets.push_back(Triplet(nfa.tailState,"e",tailState));
-    triplets.push_back(Triplet(preself_tailState,"e",tailState));
+    triplets.push_back(Triplet(nfa.tailState,"ε",tailState));
+    triplets.push_back(Triplet(preself_tailState,"ε",tailState));
 }
 
 void NFA::connect(NFA nfa) {
     triplets.insert(triplets.end(),nfa.triplets.begin(),nfa.triplets.end());
-    triplets.push_back(Triplet(tailState,"e",nfa.headState));
+    triplets.push_back(Triplet(tailState,"ε",nfa.headState));
     tailState = nfa.tailState;
 }
 
@@ -226,6 +256,8 @@ int NFA::isp(char op) {
             return 0;
         case '#':
             return 0;
+        default:
+            return -1;
     }
 }
 
@@ -241,13 +273,15 @@ int NFA::icp(char op) {
             return 3;
         case '(':
             return 5;
+        default:
+            return -1;
     }
 }
 
 void NFA::merge(vector<NFA> nfas) {
     int leftHeadState = headState;
     headState = ++stateCount;
-    triplets.push_back(Triplet(headState,"e",leftHeadState));
+    triplets.push_back(Triplet(headState,"ε",leftHeadState));
 
     for(auto nfa: nfas){
         // 合并edges
@@ -256,7 +290,7 @@ void NFA::merge(vector<NFA> nfas) {
         }
         triplets.insert(triplets.end(),nfa.triplets.begin(),nfa.triplets.end());
         int rightHeadState = nfa.headState;
-        triplets.push_back(Triplet(headState,"e",rightHeadState));
+        triplets.push_back(Triplet(headState,"ε",rightHeadState));
 
         map<int,std::string>::iterator iter;
         for( iter=nfa.terminalMap.begin(); iter!=nfa.terminalMap.end(); iter++)
@@ -280,4 +314,3 @@ void NFA::printNFA() {
         cout<<"("<<it->first<<","<<it->second<<")"<<endl;
     }
 }
-

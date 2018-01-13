@@ -28,27 +28,26 @@ struct Triplet{
 
 class NFA {
 public:
-    NFA(std::string re, bool isletter); //构造函数
+    NFA(std::string re, bool isletter);     //构造函数
 
     std::vector<int> terminalVec;           // 终态数组
     std::map<int,std::string> terminalMap;  // 结束状态-token映射表
 
     std::string tokenName;
-    static int stateCount;          //总状态数全局变量
-    int headState;                   //开始状态
-    int tailState;                  //未合并前结束状态
-    std::vector<Triplet> triplets;   //三元组集合
-    std::set<std::string> edges;     //边的集合
-    std::stack<char> stack;         //中缀转后缀所用栈
-    void merge(std::vector<NFA> nfas);            // 合并两个nfa
-    void printNFA();                // 陈述NFA基本信息，调试使用
+    static int stateCount;                  //总状态数全局变量
+    int headState;                          //开始状态
+    int tailState;                          //未合并前结束状态
+    std::vector<Triplet> triplets;          //三元组集合
+    std::set<std::string> edges;            //边的集合
+    std::stack<char> stack;                 //中缀转后缀所用栈
+    void merge(std::vector<NFA> nfas);      // 合并两个nfa
+    void printNFA();                        // 陈述NFA基本信息，调试使用
 private:
-    // 用于[]的预处理识别
-    char firstLetter;
+    char firstLetter;                       // 用于[]的预处理识别
     char endLetter;
     std::string batchprocess(std::string re); // 分离/合并token
-    void preprocess(std::string& re);        // 预处理，目前并处理[]
-    void adddot(std::string& re);            //对RE的连接加上.运算符
+    std::string preprocess(std::string re);   // 预处理，目前并处理[]
+    void adddot(std::string& re);             //对RE的连接加上.运算符
 
     // 先规定只有*,|,(,),.,+"运算符，优先级高的数字高
     // *的优先级大于| 大于.

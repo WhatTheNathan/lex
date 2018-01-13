@@ -18,7 +18,7 @@ void ODFA::optimization(DFA dfa) {
     divideByTerminal(dfa);
     weakDivide(dfa);
     generateTriplet(dfa);
-    printODFA();
+//    printODFA();
 }
 
 
@@ -59,9 +59,7 @@ void ODFA::weakDivide(DFA dfa) {
             OSet tempSet = emptyOSet;
             tempMap[oSet.set] = tempSet;
         }
-//        cout<<"list大小 "<<list.size()<<endl;
         OSet judgeSet = list.front();
-//        cout<<"judgeSet的set大小 "<<judgeSet.set.size()<<endl;
 
         // 已经judge过所有边，或者状态集合数为1，则不能再划分
         if(judgeSet.judgeCount == edges.size() || judgeSet.set.size() == 1){
@@ -91,7 +89,6 @@ void ODFA::weakDivide(DFA dfa) {
 
         for(int i=judgeSet.judgeCount; i<edges.size(); i++){
             // 进行划分
-//            cout<<"通过"<<edges[i]<<"划分"<<endl;
             for(auto stateSet: judgeSet.set){
                 set<int> moveSet = dfa.move(stateSet,edges[i]);
                 if(moveSet.size() == 0){
@@ -172,7 +169,31 @@ void ODFA::divideByTerminal(DFA dfa) {
     {
         list.push_back(it->second);
     }
+//    list.push_back(orderTeminalMap[0]);
+//    for(it=this->orderTeminalMap.begin(); it!=this->orderTeminalMap.end(); it++)
+//    {
+//        if(it->first == 0){
+//            continue;
+//        }
+//        for(auto stateSet: it->second.set){
+//                // 寻找terminalSet
+//                map<std::set<int>,std::string>::iterator iter;
+//                for( iter=dfa.setTerminal_TokenMap.begin(); iter!=dfa.setTerminal_TokenMap.end(); iter++)
+//                {
+//                    if(stateSet == iter->first){
+//                        it->second.tokenName = dfa.setTerminal_TokenMap[stateSet];
+//                        this->terminalSets.push_back(it->second);
+//                        break;
+//                    }
+//                }
+//            }
+//
+//        cout<<it->second.tokenName<<endl;
+//        sets.push_back(it->second);
+//        terminalSets.push_back(it->second);
+//    }
 }
+
 
 void ODFA::printODFA() {
     cout<<"=========headSet==========="<<endl;
@@ -211,4 +232,3 @@ void ODFA::printODFA() {
         cout<<"************************************************************************************"<<endl;
     }
 }
-

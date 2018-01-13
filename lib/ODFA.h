@@ -7,6 +7,7 @@
 #include "DFA.h"
 #include <list>
 
+// 注意使用.set判断是否相等
 struct OSet{
     std::set<std::set<int>> set;
     int judgeCount = 0;
@@ -47,6 +48,7 @@ struct OSetTriplet{
         edge = _edge;
         tail = _tailSet;
     }
+    OSetTriplet(){}
 };
 
 
@@ -54,14 +56,14 @@ class ODFA {
 public:
     ODFA();
     ODFA(DFA dfa);
-    std::vector<OSet> sets;            // OSet的数组
-    OSet headSet;                       // 初始OSet
-    std::vector<OSet> terminalSets;    // 包含终态的OSet
+    std::vector<OSet> sets;                 // OSet的数组
+    OSet headSet;                           // 初始OSet
+    std::vector<OSet> terminalSets;         // 包含终态的OSet
     std::map<int,OSet> orderTeminalMap;
-    std::vector<std::string> edges;     //边的集合
-    std::list<OSet> list;              // 划分时所用到的线性表
-    std::vector<OSetTriplet> oSetTriplets; //ODFA的三元组数组，表示优化后的状态集合的三元组关系
-    void printODFA();                   //调试使用
+    std::vector<std::string> edges;         //边的集合
+    std::list<OSet> list;                   // 划分时所用到的线性表
+    std::vector<OSetTriplet> oSetTriplets;  //ODFA的三元组数组，表示优化后的状态集合的三元组关系
+    void printODFA();                       //调试使用
 private:
     std::set<std::set<int>> emptySet;
     void optimization(DFA dfa);           // 优化DFA
