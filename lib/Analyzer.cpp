@@ -23,11 +23,20 @@ void Analyzer::run() {
             if(triplet.head.set == currentOSet.set && triplet.edge == char2string(edge)){
                 currentOSet = triplet.tail;
                 findFlag = 1;
-                continue;
+                break;
             }
         }
         if(!findFlag){
             cout<<"error occur: 找不到边"<<endl;
+        }else{
+            for(auto set: currentOSet.set){
+                for(auto state: set){
+                    cout<<state<<",";
+                }
+                cout<<endl;
+            }
+            cout<<currentOSet.tokenName<<endl;
+            cout<<"@@@@@@@@@@@@@@@@@@@"<<endl;
         }
     }
     Token token = Token(code,currentOSet.tokenName,++tokenMap[currentOSet.tokenName]);

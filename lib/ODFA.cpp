@@ -52,14 +52,13 @@ void ODFA::weakDivide(DFA dfa) {
     list.push_back(emptyOSet);
     while(!list.empty() ){
         // 获取此时所有的叶节点OSet
-        map<OSet,OSet> tempMap;
-        map<OSet,OSet>::iterator it;
+        map<set<set<int>>,OSet> tempMap;
+        map<set<set<int>>,OSet>::iterator it;
 
         for(auto oSet: list){
             OSet tempSet = emptyOSet;
-            tempMap[oSet] = tempSet;
+            tempMap[oSet.set] = tempSet;
         }
-
 //        cout<<"list大小 "<<list.size()<<endl;
         OSet judgeSet = list.front();
 //        cout<<"judgeSet的set大小 "<<judgeSet.set.size()<<endl;
@@ -96,21 +95,22 @@ void ODFA::weakDivide(DFA dfa) {
             for(auto stateSet: judgeSet.set){
                 set<int> moveSet = dfa.move(stateSet,edges[i]);
                 if(moveSet.size() == 0){
-                    tempMap[emptyOSet].set.insert(stateSet);
+                    tempMap[emptySet].set.insert(stateSet);
                     continue;
                 }
                 set<int> tailStateSet = dfa.e_closure(moveSet);
                 // 属于当前树的叶节点，包括list中以及sets中
                 for(auto oSet: list){
                     if(oSet.isInSet(tailStateSet)){
-                        tempMap[oSet].set.insert(stateSet);
+                        tempMap[oSet.set].set.insert(stateSet);
                     }
                 }
                 for(auto oSet: sets){
                     if(oSet.isInSet(tailStateSet)){
-                        tempMap[oSet].set.insert(stateSet);
+                        tempMap[oSet.set].set.insert(stateSet);
                     }
                 }
+
             }
             judgeSet.judgeCount++;
 
@@ -134,12 +134,21 @@ void ODFA::weakDivide(DFA dfa) {
                         list.push_front(it->second);
                     }
                 }
+
+                // 清空tempMap
+                for(it=tempMap.begin(); it!=tempMap.end(); it++){
+                    it->second = emptyOSet;
+                }
                 break;
             }
             // 已经划分所有边，依然未能划分，则更新list中的judgeCount
             if(judgeSet.judgeCount == edges.size()){
                 list.pop_front();
                 list.push_front(judgeSet);
+            }
+            // 清空tempMap
+            for(it=tempMap.begin(); it!=tempMap.end(); it++){
+                it->second = emptyOSet;
             }
         }
     }
@@ -161,7 +170,6 @@ void ODFA::divideByTerminal(DFA dfa) {
     map<int,OSet>::iterator it;
     for( it=this->orderTeminalMap.begin(); it!=this->orderTeminalMap.end(); it++)
     {
-//        cout<<"第一次划分所放入的该OSet的size: "<<it->second.set.size()<<endl;
         list.push_back(it->second);
     }
 }

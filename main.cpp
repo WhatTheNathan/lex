@@ -25,7 +25,7 @@ int main() {
     DFA dfa = DFA(digits_nfa);
     ODFA odfa = ODFA(dfa);
 
-    std::string code = "21312";
+    std::string code = "abb";
     Analyzer analyzer = Analyzer(odfa,code);
     analyzer.run();
 
