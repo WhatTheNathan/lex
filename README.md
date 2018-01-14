@@ -17,7 +17,7 @@ cd bin/
 
 ./n_lexer
 
-![Screen Shot 2018-01-14 at 9.56.17 AM](images/Screen Shot 2018-01-14 at 9.56.17 AM.png)
+![Image text](images/Screen Shot 2018-01-14 at 9.56.17 AM.png)
 
 ## To Do
 
