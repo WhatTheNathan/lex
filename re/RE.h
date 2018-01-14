@@ -93,7 +93,7 @@ static std::map<std::string,int> tokenMap;
 //    }
 //}
 
-static std::string test_re = "id->(a|b|i|f)((a|b|i|f)|(0|1)+)*";
+static std::string test_re = "id->(a|b|i|f|e|l|s)((a|b|i|f|e|l|s)|(0|1)+)*";
 
 static std::string digit = "digit->[0-9]";
 static std::string digits = "digits->[0-9]+";

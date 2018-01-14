@@ -26,7 +26,7 @@ int main() {
     std::cout<<"building Lexical Analyzer based on RE.h...."<<std::endl;
     NFA if_nfa = NFA(_if,false);
 //    NFA digits_nfa = NFA(digits,false);
-//    NFA else_nfa = NFA(_else,false);
+    NFA else_nfa = NFA(_else,false);
     NFA relop_nfa = NFA(sim_relop,false);
     NFA ws_nfa = NFA(ws, false);
     NFA main_nfa = NFA(test_re,false);
@@ -34,29 +34,29 @@ int main() {
     std::vector<NFA> nfas;
     nfas.push_back(if_nfa);
 //    nfas.push_back(digits_nfa);
-//    nfas.push_back(else_nfa);
+    nfas.push_back(else_nfa);
     nfas.push_back(relop_nfa);
     nfas.push_back(ws_nfa);
 
     main_nfa.merge(nfas);
 
-    main_nfa.printNFA();
+//    main_nfa.printNFA();
     DFA dfa = DFA(main_nfa);
-    dfa.printDFA();
+//    dfa.printDFA();
     ODFA odfa = ODFA(dfa);
-    odfa.printODFA();
+//    odfa.printODFA();
 
     std::cout<<"build finished."<<std::endl;
 
-    std::string code = "if a1 > b0";
-    Analyzer analyzer = Analyzer(odfa,code);
-    analyzer.run();
-//    std::cout<<"Please enter you code"<<std::endl;
-//    std::string code;
-//    while(getline(std::cin,code)){
-//        Analyzer analyzer = Analyzer(odfa,code);
-//        analyzer.run();
-//        std::cout<<"Please enter you code"<<std::endl;
-//    }
+//    std::string code = "if a01 > b10";
+//    Analyzer analyzer = Analyzer(odfa,code);
+//    analyzer.run();
+    std::cout<<"Please enter you code"<<std::endl;
+    std::string code;
+    while(getline(std::cin,code)){
+        Analyzer analyzer = Analyzer(odfa,code);
+        analyzer.run();
+        std::cout<<"Please enter you code"<<std::endl;
+    }
     return 0;
 }

@@ -25,19 +25,31 @@ void ODFA::optimization(DFA dfa) {
 void ODFA::generateTriplet(DFA dfa) {
     for(int i=0; i<sets.size(); i++){
         for(auto edge: edges){
+            int count = 0;
             for(auto stateSet: sets[i].set){
                 set<int> aTailStateSet = dfa.e_closure(dfa.move(stateSet,edge));;
                 for(auto oSet: sets){
                     if(oSet.isInSet(aTailStateSet)){
                         OSetTriplet triplet = OSetTriplet(sets[i],edge,oSet);
-                        oSetTriplets.push_back(triplet);
+//                        if(!isInoSetTriplets(triplet)){
+                            oSetTriplets.push_back(triplet);
+//                        }
                         break;
                     }
                 }
-                break;
+                break;  // 这个break应该将重复的三元组去掉，但仍然有需要添加的
             }
         }
     }
+}
+
+bool ODFA::isInoSetTriplets(OSetTriplet triplet) {
+    for(auto inTriplet: oSetTriplets){
+        if(inTriplet.head.set == triplet.head.set && inTriplet.edge == triplet.edge && inTriplet.tail.set == triplet.tail.set){
+            return true;
+        }
+    }
+    return false;
 }
 
 void ODFA::convertEdges(set<string> edgeSet) {
@@ -59,6 +71,11 @@ void ODFA::weakDivide(DFA dfa) {
             OSet tempSet = emptyOSet;
             tempMap[oSet.set] = tempSet;
         }
+        for(auto oSet: sets){
+            OSet tempSet = emptyOSet;
+            tempMap[oSet.set] = tempSet;
+        }
+
         OSet judgeSet = list.front();
 
         // 已经judge过所有边，或者状态集合数为1，则不能再划分
@@ -187,10 +204,7 @@ void ODFA::divideByTerminal(DFA dfa) {
 //                    }
 //                }
 //            }
-//
-//        cout<<it->second.tokenName<<endl;
 //        sets.push_back(it->second);
-//        terminalSets.push_back(it->second);
 //    }
 }
 

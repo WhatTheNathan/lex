@@ -71,6 +71,7 @@ private:
     void weakDivide(DFA dfa);
     void generateTriplet(DFA dfa);
     void convertEdges(std::set<std::string> edgeSet);
+    bool isInoSetTriplets(OSetTriplet triplet);
 };
 
 
