@@ -17,7 +17,7 @@ cd bin/
 
 ./n_lexer
 
-![Image text](https://raw.githubusercontent.com/WhatTheNathan/n-lexer/master/images/Screen Shot 2018-01-14 at 9.56.17 AM.png)
+![Image text](n-lexer/images/Screen Shot 2018-01-14 at 9.56.17 AM.png)
 
 ## To Do
 
