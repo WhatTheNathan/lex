@@ -45,15 +45,14 @@ int main() {
 
     std::cout<<"build finished."<<std::endl;
 
-//    std::string code = "if a01 > b10";
-//    Analyzer analyzer = Analyzer(odfa,code);
-//    analyzer.run();
+    Analyzer analyzer = Analyzer(odfa);
     std::cout<<"Please enter you code"<<std::endl;
     std::string code;
     while(getline(std::cin,code)){
-        Analyzer analyzer = Analyzer(odfa,code);
-        analyzer.run();
-        std::cout<<"Please enter you code"<<std::endl;
+        if(code == "")
+            break;
+        analyzer.run(code);
     }
+    analyzer.printTokens();
     return 0;
 }

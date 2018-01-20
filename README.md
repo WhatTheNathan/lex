@@ -17,11 +17,13 @@ cd bin/
 
 ./n_lexer
 
+double click enter to END
+
 ![Image text](https://raw.githubusercontent.com/WhatTheNathan/n-lexer/master/images/image.png)
 
 ## To Do
 
-* DFA优化为ODFA时，含终态的OSet不做优化。
+* DFA优化为ODFA时，含终态的OSet不做优化，全部拆开。
 * 增加更多RE。
 * 实现lex文件转化机制。
 * 存在太多暴力for循环，若RE为[a-z]、[A-Z]、[0-9]时构建ODFA耗时太久。

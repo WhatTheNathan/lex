@@ -8,15 +8,14 @@
 
 using namespace::std;
 
-Analyzer::Analyzer(ODFA &odfa, string code) {
+Analyzer::Analyzer(ODFA &odfa) {
     this->odfa = odfa;
-    this->code = code;
 //    set<set<int>> emptySet;
 //    OSet emptyOSet(emptySet,0);
 //    banTriplet = OSetTriplet(emptyOSet,"",emptyOSet);
 }
 
-void Analyzer::run() {
+void Analyzer::run(string code) {
     initReserverToken();
     OSet currentOSet = odfa.headSet;
     for(int i=0; i<code.size(); i++){
@@ -45,9 +44,14 @@ void Analyzer::run() {
                         // continue
                     } else {
                         string lexme = pop_word();
-                        Token token = Token(lexme, currentOSet.tokenName, ++tokenMap[currentOSet.tokenName]);
-                        token.printToken();
-                        tokens.push_back(token);
+                        if(isTokenExsits(lexme)){
+                            //pass
+                            pop_word();
+                        }else{
+                            Token token = Token(lexme, currentOSet.tokenName, ++tokenMap[currentOSet.tokenName]);
+//                            token.printToken();
+                            tokens.push_back(token);
+                        }
                         currentOSet = odfa.headSet;
                     }
                 } else if (currentOSet.tokenName == "ws") {
@@ -59,17 +63,24 @@ void Analyzer::run() {
                         // continue
                     } else {
                         string lexme = pop_word();
-                        Token token = Token(lexme, currentOSet.tokenName, ++tokenMap[currentOSet.tokenName]);
-                        token.printToken();
-                        tokens.push_back(token);
+                        if(isTokenExsits(lexme)){
+                            pop_word();
+                        }else{
+                            Token token = Token(lexme, currentOSet.tokenName, ++tokenMap[currentOSet.tokenName]);
+//                            token.printToken();
+                            tokens.push_back(token);
+                        }
                         currentOSet = odfa.headSet;
                     }
                 }
             else {
                     string lexme = pop_word();
-                    Token token = Token(lexme, currentOSet.tokenName, -1);
-                    token.printToken();
-                    tokens.push_back(token);
+                    if(isTokenExsits(lexme)){
+                        pop_word();
+                    }else{
+                        Token token = Token(lexme, currentOSet.tokenName, -1);
+                        tokens.push_back(token);
+                    }
                     currentOSet = odfa.headSet;
                 }
                 // 保留字
@@ -77,14 +88,32 @@ void Analyzer::run() {
                 if (isReserve) {
                     isReserve = false;
                     string lexme = pop_word();
-                    Token token = Token(lexme, reserveTokenName, -1);
-                    token.printToken();
-                    tokens.push_back(token);
+                    if(isTokenExsits(lexme)){
+                        pop_word();
+                    }else{
+                        Token token = Token(lexme, currentOSet.tokenName, -1);
+                        tokens.push_back(token);
+                    }
                     currentOSet = odfa.headSet;
                 }
             }
         }else{
-            cout<<"error occur: can't find edge"<<endl;
+            cout<<"error occur: Unidentified words"<<endl;
+            int emptyFlag = 0;
+            int continueFlag = 0;
+            for(;i<code.size(); i++){
+                if(code[i] == ' '){
+                    emptyFlag = 1;
+                }
+                if(emptyFlag && code[i] != ' '){
+                    continueFlag = 1;
+                }
+                if(continueFlag){
+                    break;
+                }
+            }
+            currentOSet = odfa.headSet;
+            pop_word();
         }
     }
 }
@@ -117,3 +146,17 @@ string Analyzer::pop_word() {
     return lexme;
 }
 
+bool Analyzer::isTokenExsits(string token) {
+    for(auto _token: tokens){
+        if(token == _token.lexme){
+            return true;
+        }
+    }
+    return false;
+}
+
+void Analyzer::printTokens() {
+    for(auto token: tokens){
+        token.printToken();
+    }
+}

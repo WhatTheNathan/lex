@@ -11,20 +11,21 @@
 
 class Analyzer {
 public:
-    Analyzer(ODFA &odfa,std::string code);
-    void run();
+    Analyzer(ODFA &odfa);
+    void run(std::string code);
+    void printTokens();
 private:
     std::vector<Token> tokens;
     std::vector<char> word;
     ODFA odfa;
-    std::string code;
-
-    bool isReserved();      //识别是否为保留字
-    std::string current_word();      //目前word
-    std::string pop_word();          //弹出word
 
     bool isReserve;
     std::string reserveTokenName;
+
+    bool isReserved();               //识别是否为保留字
+    std::string current_word();      //目前word
+    std::string pop_word();          //弹出word
+    bool isTokenExsits(std::string token);
 };
 
 
