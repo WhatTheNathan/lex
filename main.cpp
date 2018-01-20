@@ -28,7 +28,7 @@ int main() {
     NFA digits_nfa = NFA(digits,false);
     NFA relop_nfa = NFA(sim_relop,false);
     NFA ws_nfa = NFA(ws, false);
-    NFA main_nfa = NFA(test_re,false);
+    NFA main_nfa = NFA(final_id,false);
 
     std::vector<NFA> nfas;
     nfas.push_back(digits_nfa);
