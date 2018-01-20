@@ -87,13 +87,7 @@ static bool isInNonTable(char letter){
 /// MARK -
 static std::map<std::string,int> tokenMap;
 
-//static std::string getAttrValue(std::string token){
-//    if(token == "if" || token == "then" || token == "else"){
-//        return
-//    }
-//}
-
-static std::string test_re = "id->(a|b|i|f|e|l|s)((a|b|i|f|e|l|s)|(0|1)+)*";
+static std::string test_re = "id->(a|b|e|f|h|i|l|n|s|t)((a|b|e|f|h|i|l|n|s|t)|(0|1)+)*";
 
 static std::string digit = "digit->[0-9]";
 static std::string digits = "digits->[0-9]+";
@@ -102,6 +96,19 @@ static std::string id = "id->letter(letter|digit)*";
 static std::string final_id = "id->([a-z])(([a-z])|([0-9])+)*";
 
 // 保留字
+static std::vector<std::string> reservedTokenMap;
+
+static void initReserverToken(){
+    reservedTokenMap.emplace_back("if");
+    reservedTokenMap.emplace_back("else");
+    reservedTokenMap.emplace_back("then");
+    reservedTokenMap.emplace_back("int");
+    reservedTokenMap.emplace_back("double");
+    reservedTokenMap.emplace_back("return");
+    reservedTokenMap.emplace_back("for");
+    reservedTokenMap.emplace_back("while");
+}
+
 static std::string _if = "if->if~";
 static std::string _then = "then->then#";
 static std::string _else = "else->else$";

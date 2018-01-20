@@ -24,17 +24,14 @@ int main() {
             <<"   *   *         *    *       * *   *      *    "<<'\n'
             <<"   *   *          **   ****  *   *   ****  *    "<<std::endl;
     std::cout<<"building Lexical Analyzer based on RE.h...."<<std::endl;
-    NFA if_nfa = NFA(_if,false);
-//    NFA digits_nfa = NFA(digits,false);
-    NFA else_nfa = NFA(_else,false);
+
+    NFA digits_nfa = NFA(digits,false);
     NFA relop_nfa = NFA(sim_relop,false);
     NFA ws_nfa = NFA(ws, false);
     NFA main_nfa = NFA(test_re,false);
 
     std::vector<NFA> nfas;
-    nfas.push_back(if_nfa);
-//    nfas.push_back(digits_nfa);
-    nfas.push_back(else_nfa);
+    nfas.push_back(digits_nfa);
     nfas.push_back(relop_nfa);
     nfas.push_back(ws_nfa);
 
